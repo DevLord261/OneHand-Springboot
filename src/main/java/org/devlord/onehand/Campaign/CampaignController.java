@@ -13,7 +13,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/campaigns/")
@@ -72,5 +71,13 @@ public class CampaignController {
         return ResponseEntity.ok(campaignService.FeaturedCampaigns());
     }
 
+    @GetMapping("campaignId")
+    public ResponseEntity<CampaignDTO> ByCampaignId(
+            @RequestParam String Id
+    ){
+        CampaignDTO dto = campaignService.GetByID(Id);
+        if(dto==null) return ResponseEntity.notFound().build();
 
+        return ResponseEntity.ok(dto);
+    }
 }

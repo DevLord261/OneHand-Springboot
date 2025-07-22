@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -56,8 +57,12 @@ public class CampaignService {
 
     public List<CampaignDTO> FeaturedCampaigns(){
         var campaigns = campaignRepository.findByFeatured(true);
-        List<CampaignDTO> dtos = campaigns.stream().map(campaignMapper::toDTO).toList();
-        return dtos;
+        return campaigns.stream().map(campaignMapper::toDTO).toList();
+    }
+
+    public CampaignDTO GetByID(String id){
+        Optional<CampaignEntity> campaign = campaignRepository.findById(UUID.fromString(id));
+        return campaign.map(campaignMapper::toDTO).orElse(null);
     }
 
 
