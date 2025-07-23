@@ -2,18 +2,27 @@ package org.devlord.onehand.Utills;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.devlord.onehand.User.UserEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 public class JwtService {
 
-    private static final long EXPIRATION_MS = 1000 * 60 * 60; // 1 hour
-    private final SecretKey key = Jwts.SIG.HS256.key().build();
+    private static final long EXPIRATION_MS = 1000 * 60 * 60 *24;
 
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
     public String GenerateToken(Authentication auth){
         UserEntity user = (UserEntity) auth.getPrincipal();
         return Jwts.builder().subject(user.getUsername())
@@ -23,7 +32,7 @@ public class JwtService {
                 .claim("lastname",user.getLastname())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis()+EXPIRATION_MS))
-                .signWith(key)
+                .signWith(getSigningKey())
                 .compact();
     }
 
@@ -39,7 +48,7 @@ public class JwtService {
     public String ExtractUsername(String token){
         try{
             return Jwts.parser()
-                    .verifyWith(key)
+                    .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload().getSubject();
@@ -51,7 +60,7 @@ public class JwtService {
     public boolean isExpired(String token){
         try{
             var expiration = Jwts.parser()
-                    .verifyWith(key)
+                    .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload().getExpiration();

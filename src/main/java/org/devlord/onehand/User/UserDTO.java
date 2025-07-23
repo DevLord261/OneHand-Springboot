@@ -10,5 +10,6 @@ import java.util.UUID;
 public class UserDTO {
     private UUID id;
     private String Firstname,Lastname,username,email;
+    private String Avatar;
     private Boolean isVerified;
 }

@@ -3,19 +3,20 @@ package org.devlord.onehand.Config;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import org.devlord.onehand.Campaign.CampaignRepository;
 import org.devlord.onehand.Campaign.CampaignService;
 import org.devlord.onehand.ObjectMappers.CampaignMapper;
 import org.devlord.onehand.ObjectMappers.UserMapper;
+import org.devlord.onehand.Services.StorageSpaceService;
 import org.devlord.onehand.User.UserRepository;
 import org.devlord.onehand.User.UserService;
 import org.devlord.onehand.Utills.JwtAuthenticationFilter;
 import org.devlord.onehand.Utills.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -34,13 +35,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import javax.sql.DataSource;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 
@@ -96,8 +90,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    CampaignService campaignService(CampaignRepository campaignRepository, CampaignMapper campaignMapper){
-        return new CampaignService(campaignRepository,campaignMapper);
+    CampaignService campaignService(CampaignRepository campaignRepository, CampaignMapper campaignMapper, StorageSpaceService spaceConfig){
+        return new CampaignService(campaignRepository,campaignMapper,spaceConfig);
     }
 
     @Bean
@@ -114,9 +108,13 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    @Bean ObjectMapper objectMapper(){
+
+    @Bean
+    @Primary
+    ObjectMapper objectMapper(){
         return Jackson2ObjectMapperBuilder.json()
                 .featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .serializationInclusion(JsonInclude.Include.NON_NULL)
                 .modules(new JavaTimeModule())
                 .build();

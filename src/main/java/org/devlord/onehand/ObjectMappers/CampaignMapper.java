@@ -11,15 +11,17 @@ public class CampaignMapper {
 
     @Autowired
     private final ObjectMapper objectMapper;
+    @Autowired
+    private final UserMapper userMapper;
 
-    public CampaignMapper(ObjectMapper objectMapper) {
+    public CampaignMapper(ObjectMapper objectMapper, UserMapper userMapper) {
         this.objectMapper = objectMapper;
+        this.userMapper = userMapper;
     }
 
-    public CampaignEntity toEntity(CampaignDTO dto){
-        return objectMapper.convertValue(dto,CampaignEntity.class);
-    }
     public CampaignDTO toDTO(CampaignEntity entity){
-        return objectMapper.convertValue(entity,CampaignDTO.class);
+        CampaignDTO dto = objectMapper.convertValue(entity,CampaignDTO.class);
+        dto.setOrganizer(userMapper.toDTO(entity.getOrganizer()));
+        return dto;
     }
 }

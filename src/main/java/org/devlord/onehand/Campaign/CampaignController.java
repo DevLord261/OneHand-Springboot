@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -42,17 +43,23 @@ public class CampaignController {
     @PostMapping("create")
     public ResponseEntity<String> CreateCampaign(
             @ModelAttribute CampaignEntity campaign,
-            @AuthenticationPrincipal UserEntity user
+            @AuthenticationPrincipal UserEntity user,
+            @RequestParam("file")MultipartFile heroimage
     ){
         try{
             campaign.setOrganizer(user);
-            campaignService.Create(campaign);
+            campaignService.Create(campaign,heroimage);
             return ResponseEntity.status(HttpStatus.CREATED).body("Created Succesfully");
         } catch (AuthenticationException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Need to login");
         }catch (NullPointerException e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnAuthorized");
         }
+    }
+
+    @PostMapping("upload")
+    public ResponseEntity<String> uploadeImage(@AuthenticationPrincipal UserEntity user,@RequestParam("list") MultipartFile file){
+        return ResponseEntity.ok(campaignService.upload(user.getId().toString(),file));
     }
 
     @GetMapping("mycampaigns")

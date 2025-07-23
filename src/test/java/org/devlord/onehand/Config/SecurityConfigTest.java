@@ -11,13 +11,13 @@ import org.devlord.onehand.Campaign.CampaignRepository;
 import org.devlord.onehand.Campaign.CampaignService;
 import org.devlord.onehand.ObjectMappers.CampaignMapper;
 import org.devlord.onehand.ObjectMappers.UserMapper;
+import org.devlord.onehand.Services.StorageSpaceService;
 import org.devlord.onehand.User.UserRepository;
 import org.devlord.onehand.User.UserService;
 import org.devlord.onehand.Utills.JwtAuthenticationFilter;
 import org.devlord.onehand.Utills.JwtService;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -26,7 +26,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -71,8 +70,8 @@ public class SecurityConfigTest {
     }
 
     @Bean
-    CampaignService campaignService(CampaignRepository campaignRepository, CampaignMapper campaignMapper){
-        return new CampaignService(campaignRepository,campaignMapper);
+    CampaignService campaignService(CampaignRepository campaignRepository, CampaignMapper campaignMapper, StorageSpaceService spaceService){
+        return new CampaignService(campaignRepository,campaignMapper,spaceService);
     }
 
     @Bean
@@ -98,7 +97,7 @@ public class SecurityConfigTest {
     }
 
     @Bean
-    public DataSource dataSource() throws IOException {
+    public DataSource dataSource()  {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:postgresql://localhost:5432/onehand");
         config.setUsername("DevLord");

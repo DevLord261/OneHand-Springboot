@@ -2,10 +2,9 @@ package org.devlord.onehand.Campaign;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.devlord.onehand.User.UserEntity;
+import org.devlord.onehand.User.UserDTO;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 
@@ -34,6 +33,6 @@ public class CampaignDTO {
     private int donaterCount = 0;
 
     private boolean isvolunteer = false;
-    private List<UserEntity> volunteers;
+    private UserDTO organizer;
 
 }

@@ -15,7 +15,7 @@ public class MapperConfig {
     }
 
     @Bean
-    public CampaignMapper campaignMapper(ObjectMapper objectMapper) {
-        return new CampaignMapper(objectMapper);
+    public CampaignMapper campaignMapper(ObjectMapper objectMapper,UserMapper userMapper) {
+        return new CampaignMapper(objectMapper,userMapper);
     }
 }
